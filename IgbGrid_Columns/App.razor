@@ -1,0 +1,71 @@
+﻿@inject IJSRuntime JSRuntime
+<IgbGrid AutoGenerate="false"
+         Id="myGrid1"
+         Data="GridData"
+         Width="100%"
+         Moving=true
+         @ref="grid">
+    <IgbColumn Field="ID"
+               Header="ID">
+    </IgbColumn>
+    <IgbColumn Field="Column1"
+               Header="Column1">
+    </IgbColumn>
+    <IgbColumn Field="Column2"
+               Header="Column2">
+    </IgbColumn>
+
+    <IgbColumn Field="Column3"
+               Header="Column3">
+    </IgbColumn>
+    <IgbColumn Field="Column4"
+               Header="Column4">
+    </IgbColumn>
+    <IgbColumn Field="Column5"
+               Header="Column5">
+    </IgbColumn>
+</IgbGrid>
+
+<button @onclick="GetColumnOrder">
+    Get Column Order
+</button>
+@code {
+    private IgbGrid? grid;
+    public List<DataItem>? GridData;
+
+    protected override void OnInitialized()
+    {
+        GridData = new List<DataItem>();
+
+        for(int i = 0; i < 100; i++)
+        {
+            GridData.Add(new DataItem()
+                {
+                    ID = i.ToString(),
+                    Column1 = "item" + i,
+                    Column2 = "item" + (i % 3),
+                    Column3 = "item" + (i % 5),
+                    Column4 = "item" + (i % 10),
+                    Column5 = "item" + (i % 2),
+                });
+        }
+    }
+
+    private async Task GetColumnOrder()
+    {
+        //wwwroot/igbGrid_JavaScript.jsをインポートします。
+        await using var module = await JSRuntime.InvokeAsync<IJSObjectReference>("import", "./igbGrid_JavaScript.js");
+        //javascriptファンクションgetCurrentColumns()を実行します。
+        string[] currentColIds = await module.InvokeAsync<string[]>("getCurrentColumns", "#myGrid1");
+    }
+
+    public class DataItem
+    {
+        public string? ID { get; set; }
+        public string? Column1 { get; set; }
+        public string? Column2 { get; set; }
+        public string? Column3 { get; set; }
+        public string? Column4 { get; set; }
+        public string? Column5 { get; set; }
+    }
+}
